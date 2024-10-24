@@ -3,31 +3,22 @@ import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVideos } from '../../slices/featSlice';
 
+
 const Course = () => {
 
   const dispatch = useDispatch();
   const { videos, totalVideos, pageSize, currentPage, totalPages, videoLoading, videoError } = useSelector(state => state.feat);
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(getVideos({ page: currentPage, size: pageSize, classOp: 7, subject: 'Maths' }));
-  }, [dispatch, currentPage, pageSize]);
+    dispatch(getVideos({ page: currentPage, size: pageSize, classOp: user.classOp, subject: '' }));
+  }, [dispatch, currentPage, pageSize, user.classOp]);
 
   const handlePageChange = (newPage) => {
-    dispatch(getVideos({ page: newPage, size: pageSize, classOp: 7, subject: 'Maths' }));
-  };
-
-  const Pagination = () => {
-    const pageNumbers = [...Array(totalPages).keys()].map(num => num + 1);
-    return (
-      <div className="pagination">
-        {pageNumbers.map(number => (
-          <button key={number} onClick={() => handlePageChange(number)} disabled={currentPage === number}>
-            {number}
-          </button>
-        ))}
-      </div>
-    );
-  };
+    if (newPage >= 1 && newPage <= totalPages) {
+      dispatch(getVideos({ page: newPage, size: pageSize, classOp: user.classOp, subject: '' }));
+    }
+  };  
 
   return (
     <Fragment>
@@ -37,23 +28,43 @@ const Course = () => {
         <link rel="canonical" href="https://saiclasses.netlify.app/videos" />
       </Helmet>
 
-      <div className="page flexcol center">
-        <h1>Videos Page</h1>
+      <div className="page flexcol start-center">
+        <h1 className="heading">Videos</h1>
+
         {videoLoading && <p>Loading videos...</p>}
         {videoError && <p>Error: {videoError}</p>}
-        <div className="video-grid">
-          {videos.map(video => (
-            <div className="video-card" key={video._id}>
-              <iframe width="100%" height="200" src={video.videoLink} title={video.subject} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
-              </iframe>
-              <h3>{video.subject} (Class: {video.classOp})</h3>
+        {!videoLoading && !videoError && videos.length === 0 && <p>No videos available.</p>}
+        <p>Showing {currentPage} out of {totalPages} pages </p>
+
+        <div className="video-list">
+          {videos.map((video, index) => (
+            <div key={index} className="video-item">
+              <div className="flex minBox center-start">
+                <p>{video.subject}</p>
+                <p>{video.classOp}</p>
+              </div>
+
+              <a href={video.videoLink} target="_blank" rel="noopener noreferrer">
+                Download
+              </a>
             </div>
           ))}
         </div>
-        {totalPages > 1 && <Pagination />}
+
+        {totalVideos > pageSize && (
+          <div className="pagination">
+            <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
+              Previous
+            </button>
+            <span>{`Page ${currentPage} of ${totalPages}`}</span>
+            <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </Fragment>
-  )
-}
+  );
+};
 
-export default Course
+export default Course;

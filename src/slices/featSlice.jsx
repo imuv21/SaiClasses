@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'; 
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const getVideos = createAsyncThunk(
     'feat/getVideos',
-    async (userData, { getState, rejectWithValue }) => {
+    async ({ page, size, classOp, subject }, { getState, rejectWithValue }) => {
         try {
             const { auth } = getState();
             const token = auth.token;
@@ -14,7 +14,7 @@ export const getVideos = createAsyncThunk(
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                params: userData
+                params: { page, size, classOp, subject }
             });
 
             if (response.data.success === false || response.data.status === 'failed') {
@@ -39,9 +39,9 @@ const initialState = {
     videoError: null,
 
     totalVideos: 0,
-    currentPage: 0,
-    pageSize: 0,
-    totalPages: 0,
+    currentPage: 1,
+    pageSize: 3,
+    totalPages: 1,
 };
 
 const featSlice = createSlice({
@@ -57,7 +57,7 @@ const featSlice = createSlice({
             .addCase(getVideos.fulfilled, (state, action) => {
                 state.videoLoading = false;
                 state.videoError = null;
-                
+
                 state.videos = action.payload.videos;
                 state.totalPages = action.payload.totalPages;
                 state.pageSize = action.payload.pageSize;

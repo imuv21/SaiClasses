@@ -173,7 +173,7 @@ const Profile = () => {
         <link rel="canonical" href="https://saiclasses.netlify.app/profile" />
       </Helmet>
 
-      <div className="page flex center-start" style={{ height: '100vh' }}>
+      <div className="page flex center-start" style={{height: '100vh'}}>
         <div className="profile">
           <h1 className="heading">Profile</h1>
 
