@@ -37,7 +37,7 @@ const Course = () => {
         <h1 className="heading">Videos</h1>
 
         {videoLoading && <p>Loading videos...</p>}
-        {videoError && <p>Error: {videoError}</p>}
+        {videoError && <p>{videoError}</p>}
         {!videoLoading && !videoError && videos?.length === 0 && <p>No videos available.</p>}
         {!videoLoading && !videoError && videos?.length > 0 &&
           <div className="flex center-space wh">
