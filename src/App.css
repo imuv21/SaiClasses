@@ -682,6 +682,57 @@ button:focus {
   color: var(--codeFour);
 }
 
+.plusmiBtns{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  border-radius: 50%;
+}
+.plusmiBtns .MuiSvgIcon-root {
+  width: 21px;
+  height: 21px;
+}
+.plusmiBtns:disabled {
+  background-color: var(--codeTwo);
+  color: var(--codeThree);
+  border: 1px solid var(--codeThree);
+  cursor: not-allowed;
+}
+.plusmiBtns:not(:disabled) {
+  background-color: var(--codeOne);
+  color: var(--codeFour);
+}
+
+/* pricing table css */
+.pricing-table {
+  width: 100%;
+  max-width: 600px;
+  border-collapse: collapse;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.pricing-table th, .pricing-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.pricing-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.pricing-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.filterselect {
+  width: fit-content;
+  
+}
+
+
 /* common */
 .page {
   background: var(--codeOne);

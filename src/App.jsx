@@ -18,6 +18,8 @@ const Otp = lazy(() => import('./pages/auth/Otp'));
 const Home = lazy(() => import('./pages/Home'));
 const Profile = lazy(() => import('./pages/auth/Profile'));
 const Courses = lazy(() => import('./pages/Features/Courses'));
+const Payment = lazy(() => import('./pages/Features/Payment'));
+const PaymentSuccess = lazy(() => import('./pages/Features/PaymentSuccess'));
 
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
             <Route path='/' element={<Layout><Home /></Layout>} />
             <Route path='/profile' element={<Layout><Profile /></Layout>} />
             <Route path='/videos' element={<Layout><Courses /></Layout>} />
+            <Route path='/payment' element={<Layout><Payment /></Layout>} />
           </Route>
 
           {/* public */}
@@ -45,6 +48,7 @@ function App() {
           </Route>
 
           {/* both */}
+          <Route path='/payment-success' element={<Layout><PaymentSuccess /></Layout>} />
 
           {/* not found */}
           <Route path='*' element={<div className='page flex center wh'>Are you kidding me? Kuchh bhi!</div>} />

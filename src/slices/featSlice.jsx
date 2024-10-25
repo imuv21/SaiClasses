@@ -41,7 +41,7 @@ const initialState = {
     totalVideos: 0,
     currentPage: 1,
     pageSize: 3,
-    totalPages: 1,
+    totalPages: 0,
 };
 
 const featSlice = createSlice({

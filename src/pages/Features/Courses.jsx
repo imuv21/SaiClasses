@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVideos } from '../../slices/featSlice';
@@ -9,16 +9,21 @@ const Course = () => {
   const dispatch = useDispatch();
   const { videos, totalVideos, pageSize, currentPage, totalPages, videoLoading, videoError } = useSelector(state => state.feat);
   const user = useSelector((state) => state.auth.user);
+  const [sub, setSub] = useState('');
 
   useEffect(() => {
-    dispatch(getVideos({ page: currentPage, size: pageSize, classOp: user.classOp, subject: '' }));
-  }, [dispatch, currentPage, pageSize, user.classOp]);
+    dispatch(getVideos({ page: currentPage, size: pageSize, classOp: user.classOp, subject: sub }));
+  }, [dispatch, currentPage, pageSize, user.classOp, sub]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      dispatch(getVideos({ page: newPage, size: pageSize, classOp: user.classOp, subject: '' }));
+      dispatch(getVideos({ page: newPage, size: pageSize, classOp: user.classOp, subject: sub }));
     }
-  };  
+  };
+
+  const handleSubFilter = (event) => {
+    setSub(event.target.value);
+  };
 
   return (
     <Fragment>
@@ -33,8 +38,18 @@ const Course = () => {
 
         {videoLoading && <p>Loading videos...</p>}
         {videoError && <p>Error: {videoError}</p>}
-        {!videoLoading && !videoError && videos.length === 0 && <p>No videos available.</p>}
-        <p>Showing {currentPage} out of {totalPages} pages </p>
+        {!videoLoading && !videoError && videos?.length === 0 && <p>No videos available.</p>}
+        {!videoLoading && !videoError && videos?.length > 0 &&
+          <div className="flex center-space wh">
+            <p>Showing {videos.length} out of {totalVideos} videos </p>
+            <select className='filterselect' name="filter" id="filter" onChange={handleSubFilter}>
+              <option value=''>Select Subject</option>
+              {user?.subjects?.length > 0 && user.subjects.map((subs, index) => (
+                <option key={index} value={subs}>{subs}</option>
+              ))}
+            </select>
+          </div>
+        }
 
         <div className="video-list">
           {videos.map((video, index) => (
@@ -43,7 +58,6 @@ const Course = () => {
                 <p>{video.subject}</p>
                 <p>{video.classOp}</p>
               </div>
-
               <a href={video.videoLink} target="_blank" rel="noopener noreferrer">
                 Download
               </a>

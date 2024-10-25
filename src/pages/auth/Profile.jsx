@@ -15,6 +15,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const defImg = 'https://t3.ftcdn.net/jpg/03/58/90/78/360_F_358907879_Vdu96gF4XVhjCZxN2kCG0THTsSQi8IhT.jpg';
+  const subandclass = false;
 
   const [formValues, setFormValues] = useState({
     firstName: '',
@@ -173,7 +174,7 @@ const Profile = () => {
         <link rel="canonical" href="https://saiclasses.netlify.app/profile" />
       </Helmet>
 
-      <div className="page flex center-start" style={{height: '100vh'}}>
+      <div className="page flex center-start" style={{ height: '100vh' }}>
         <div className="profile">
           <h1 className="heading">Profile</h1>
 
@@ -233,30 +234,35 @@ const Profile = () => {
                       <input id="avatar" type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
                     </div>
 
+
                     <div className="pagebox10 flexcol center">
                       <input type="text" name='firstName' autoComplete='name' placeholder='Enter your first name...' value={formValues.firstName} onChange={handleInputChange} required />
                       <input type="text" name='lastName' autoComplete='name' placeholder='Enter your last name...' value={formValues.lastName} onChange={handleInputChange} required />
-                      <select name='classOp' value={formValues.classOp} onChange={handleInputChange} required>
-                        <option value="">Select your class</option>
-                        <option value={6}>6th Class</option>
-                        <option value={7}>7th Class</option>
-                        <option value={8}>8th Class</option>
-                        <option value={9}>9th Class</option>
-                        <option value={10}>10th Class</option>
-                      </select>
+                      {subandclass &&
+                        <select name='classOp' value={formValues.classOp} onChange={handleInputChange} required>
+                          <option value="">Select your class</option>
+                          <option value={6}>6th Class</option>
+                          <option value={7}>7th Class</option>
+                          <option value={8}>8th Class</option>
+                          <option value={9}>9th Class</option>
+                          <option value={10}>10th Class</option>
+                        </select>
+                      }
                     </div>
 
-                    <div className="wh g15 flexcol center">
-                      <p className='text wh'>Select subjects</p>
-                      <div className="subjectCont">
-                        {subjects.map((subject) => (
-                          <div key={subject} className={`subject ${selectedSubjects.includes(subject) ? "turnBlue" : ""}`} onClick={() => handleSubjectClick(subject)}>
-                            {subject}
-                          </div>
-                        ))}
+                    {subandclass &&
+                      <div className="wh g15 flexcol center">
+                        <p className='text wh'>Select subjects</p>
+                        <div className="subjectCont">
+                          {subjects.map((subject) => (
+                            <div key={subject} className={`subject ${selectedSubjects.includes(subject) ? "turnBlue" : ""}`} onClick={() => handleSubjectClick(subject)}>
+                              {subject}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-
+                    }
+                    
                     <div className="flex center g20 wh">
                       <button type='submit' disabled={isSubmitted}>{isSubmitted ? 'Updating...' : 'Update'}</button>
                       <button type="button" onClick={closepopup} className="btn">Cancel</button>

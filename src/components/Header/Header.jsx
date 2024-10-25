@@ -116,7 +116,7 @@ const Header = () => {
                                     Account <KeyboardArrowDownIcon />
                                     <div className={`hover-div ${isHovered ? 'visible' : ''}`}>
                                         <a href='/profile' className='text'>Profile</a>
-                                        <a href="/videos" cclassName='text'>Videos</a>
+                                        <a href="/videos" className='text'>Videos</a>
                                         <a href="/payment" className='text'>Payment</a>
                                         <a onClick={logout} className='text'>Logout</a>
                                         <a onClick={deleteAccount} className='text'>Delete Account</a>
