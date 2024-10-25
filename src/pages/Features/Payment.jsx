@@ -158,28 +158,33 @@ const Payment = () => {
                 }
 
                 <h1 className='headingSmol flex wh center'>Payment History</h1>
-                <table className="pricing-table">
-                    <thead>
-                        <tr>
-                            <th>Index</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Duration</th>
-                        </tr>
-                    </thead>
-                    {user?.subscription?.paymentHistory?.length > 0 ?
-                        (user.subscription.paymentHistory.map((payment, index) => (
-                            <tbody key={index}>
-                                <tr>
+
+                {user?.subscription?.paymentHistory?.length > 0 ? (
+                    <table className="pricing-table">
+                        <thead>
+                            <tr>
+                                <th>Index</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {user.subscription.paymentHistory.map((payment, index) => (
+                                <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{formatDate(payment.paymentDate)}</td>
                                     <td>{payment.paidAmount} ₹</td>
-                                    <td>{payment.duration}{payment.duration > 1 ? ` months` : ` month`}</td>
+                                    <td>{payment.duration}{payment.duration > 1 ? ' months' : ' month'}</td>
                                 </tr>
-                            </tbody>))) :
-                        (<p className='text'>No payment history available.</p>)
-                    }
-                </table>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p className='flex center wh text'>No payment history available.</p>
+                )}
+
+
 
                 <h1 className='headingSmol flex wh center'>Payment Structure</h1>
                 <table className="pricing-table">
