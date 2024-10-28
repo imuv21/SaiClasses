@@ -729,7 +729,19 @@ button:focus {
 
 .filterselect {
   width: fit-content;
-  
+}
+
+/* stream video */
+.video {
+  width: 100%;
+  min-width: 340px;
+  max-width: 1000px;
+  border-radius: 10px;
+}
+.quality {
+  width: 100%;
+  min-width: 330px;
+  max-width: 390px;
 }
 
 

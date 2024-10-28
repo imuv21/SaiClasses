@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVideos } from '../../slices/featSlice';
+import { Link } from 'react-router-dom';
 
 
 const Course = () => {
@@ -28,7 +29,7 @@ const Course = () => {
   return (
     <Fragment>
       <Helmet>
-        <title>Sai Classes</title>
+        <title>Courses</title>
         <meta name="description" content="Join SaiClasses today for academic excellence and success in school exams"></meta>
         <link rel="canonical" href="https://saiclasses.netlify.app/videos" />
       </Helmet>
@@ -58,9 +59,9 @@ const Course = () => {
                 <p>{video.subject}</p>
                 <p>{video.classOp}</p>
               </div>
-              <a href={video.videoLink} target="_blank" rel="noopener noreferrer">
-                Download
-              </a>
+              <Link to={`/stream/${video.publicId}`}>
+                Watch
+              </Link>
             </div>
           ))}
         </div>

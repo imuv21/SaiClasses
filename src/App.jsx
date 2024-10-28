@@ -20,6 +20,7 @@ const Profile = lazy(() => import('./pages/auth/Profile'));
 const Courses = lazy(() => import('./pages/Features/Courses'));
 const Payment = lazy(() => import('./pages/Features/Payment'));
 const PaymentSuccess = lazy(() => import('./pages/Features/PaymentSuccess'));
+const StreamVideo = lazy(() => import('./pages/Features/StreamVideo'));
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
             <Route path='/profile' element={<Layout><Profile /></Layout>} />
             <Route path='/videos' element={<Layout><Courses /></Layout>} />
             <Route path='/payment' element={<Layout><Payment /></Layout>} />
+            <Route path='/stream/:publicId' element={<Layout><StreamVideo /></Layout>} />
           </Route>
 
           {/* public */}

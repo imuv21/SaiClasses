@@ -94,7 +94,7 @@ const Payment = () => {
     return (
         <Fragment>
             <Helmet>
-                <title>Sai Classes</title>
+                <title>Payment Management</title>
                 <meta name="description" content="Join SaiClasses today for academic excellence and success in school exams"></meta>
                 <link rel="canonical" href="https://saiclasses.netlify.app/payment" />
             </Helmet>
