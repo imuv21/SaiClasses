@@ -549,8 +549,8 @@ button:focus {
 }
 
 .turnBlue {
-  background-color: var(--codeThree);
-  color: var(--codeOne);
+  background-color: var(--codeThree) !important;
+  color: var(--codeOne) !important;
 }
 
 .headerBox {
@@ -820,6 +820,12 @@ button:focus {
 
   .otpBox {
     width: 30px;
+  }
+
+  .password span {
+    position: absolute;
+    right: 10px;
+    top: 15%;
   }
 }
 

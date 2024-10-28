@@ -206,7 +206,7 @@ const Signup = () => {
             <p className='text wh'>Select subjects</p>
             <div className="subjectCont">
               {subjects.map((subject) => (
-                <div key={subject} className={`subject ${selectedSubjects.includes(subject) ? "turnBlue" : ""}`} onClick={() => handleSubjectClick(subject)}>
+                <div key={subject} className={`subject ${selectedSubjects.includes(subject) ? "turnBlue" : ""}`} onClick={() => handleSubjectClick(subject)} onTouchStart={() => handleSubjectClick(subject)}>
                   {subject}
                 </div>
               ))}
