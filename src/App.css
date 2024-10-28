@@ -546,6 +546,7 @@ button:focus {
   transition: var(--trans);
   border-radius: var(--brOne);
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .turnBlue {
