@@ -1,15 +1,11 @@
 import './Header.scss';
 import React, { useState, useEffect, Fragment } from 'react';
-import { toast } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser, deleteUser } from '../../slices/authSlice';
-
+import { logout } from '../../slices/authSlice';
+import { showToast } from '../Schema';
 import EastIcon from '@mui/icons-material/East';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
-
 
 const Header = () => {
 
@@ -18,30 +14,15 @@ const Header = () => {
     const user = useSelector((state) => state.auth.user);
     const [isHovered, setIsHovered] = useState(false);
 
-    const logout = async (e) => {
+    const logoutHandler = async (e) => {
         e.preventDefault();
         try {
-            const response = await dispatch(logoutUser()).unwrap();
-            toast(<div className='flex center g5'> < VerifiedIcon /> {response.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'rgb(0, 189, 0)' }, className: 'success', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+            dispatch(logout());
+            sessionStorage.clear();
+            showToast('success', 'Logout Successfully!');
+            navigate('/register');
         } catch (error) {
-            toast(<div className='flex center g5'> < NewReleasesIcon /> Error logging out...</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
-        } finally {
-            navigate('/login');
-        }
-    }
-
-    const deleteAccount = async (e) => {
-        e.preventDefault();
-        try {
-            const deleteResponse = await dispatch(deleteUser({ email: user.email, password: user.password })).unwrap();
-            if (deleteResponse.status === 'success') {
-                toast(<div className='flex center g5'> < VerifiedIcon /> {deleteResponse.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'rgb(0, 189, 0)' }, className: 'success', ariaProps: { role: 'status', 'aria-live': 'polite' } });
-                await logout();
-            } else {
-                toast(<div className='flex center g5'> < NewReleasesIcon /> {deleteResponse.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
-            }
-        } catch (error) {
-            toast(<div className='flex center g5'> < NewReleasesIcon /> Error deleting account...</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+            showToast('error', 'Something went wrong!');
         }
     }
 
@@ -118,16 +99,14 @@ const Header = () => {
                                         <a href='/profile' className='text'>Profile</a>
                                         <a href="/videos" className='text'>Videos</a>
                                         <a href="/payment" className='text'>Payment</a>
-                                        <a onClick={logout} className='text'>Logout</a>
-                                        <a onClick={deleteAccount} className='text'>Delete Account</a>
+                                        <a onClick={logoutHandler} className='text'>Logout</a>
                                     </div>
                                 </a>
                             </li>
                             <li className="menu-item mlink"><a href="/profile" className="menu-link">Profile</a></li>
                             <li className="menu-item mlink"><a href="/videos" className="menu-link">Videos</a></li>
                             <li className="menu-item mlink"><a href="/payment" className="menu-link">Payment</a></li>
-                            <li className="menu-item mlink"><a onClick={logout} className="menu-link">Logout</a></li>
-                            <li className="menu-item mlink"><a onClick={deleteAccount} className="menu-link">Delete Account</a></li>
+                            <li className="menu-item mlink"><a onClick={logoutHandler} className="menu-link">Logout</a></li>
                         </ul>
                     </div>
 

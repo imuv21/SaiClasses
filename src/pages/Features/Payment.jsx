@@ -1,11 +1,11 @@
 import React, { Fragment, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-hot-toast';
+import { showToast } from '../../components/Schema';
 import axios from 'axios';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
+
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -82,7 +82,7 @@ const Payment = () => {
             modal: {
                 escape: false,
                 ondismiss: () => {
-                    toast(<div className='flex center g5'> < NewReleasesIcon /> Payment failed</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+                    showToast('error', 'Something went wrong!');
                 }
             }
         };
