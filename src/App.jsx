@@ -9,6 +9,8 @@ import Loader from './components/Loader/Loader';
 const Protector = lazy(() => import('./components/Protector'));
 const Layout = lazy(() => import('./components/Layout'));
 
+
+
 //public
 const Login = lazy(() => import('./pages/auth/Login'));
 const Signup = lazy(() => import('./pages/auth/Signup'));
@@ -53,7 +55,7 @@ function App() {
           <Route path='/payment-success' element={<Layout><PaymentSuccess /></Layout>} />
 
           {/* not found */}
-          <Route path='*' element={<div className='page flex center wh'>Are you kidding me? Kuchh bhi!</div>} />
+          <Route path='*' element={<div className='page flex center wh'>The path does not exist!</div>} />
 
         </Routes>
       </Suspense>

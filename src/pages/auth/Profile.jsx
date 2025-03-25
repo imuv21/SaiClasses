@@ -1,19 +1,17 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-hot-toast';
-import { updateProfile } from '../../slices/authSlice';
+import { showToast } from '../../components/Schema';
+import { updateProfile, clearErrors } from '../../slices/authSlice';
 import DOMPurify from 'dompurify';
 
-import VerifiedIcon from '@mui/icons-material/Verified';
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import ClearIcon from '@mui/icons-material/Clear';
 
 
 const Profile = () => {
 
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
+  const { user, profLoading, profErrors, profError } = useSelector((state) => state.auth);
   const defImg = 'https://t3.ftcdn.net/jpg/03/58/90/78/360_F_358907879_Vdu96gF4XVhjCZxN2kCG0THTsSQi8IhT.jpg';
   const subandclass = false;
 
@@ -107,15 +105,24 @@ const Profile = () => {
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: value
-    }));
+    setFormValues({ ...formValues, [name]: value });
+    dispatch(clearErrors());
   };
+
+  const getProfError = (field) => Array.isArray(profErrors) ? profErrors.find(error => error.path === field) : null;
+  const firstNameError = getProfError('firstName');
+  const lastNameError = getProfError('lastName');
+  const classOpError = getProfError('classOp');
+  const subjectsError = getProfError('subjects');
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (isSubmitted) return;
+    if (firstNameError || lastNameError || classOpError || subjectsError) {
+      showToast('error', 'Please fix the errors before submitting the form!');
+      return;
+    }
     setIsSubmitted(true);
     try {
       const sanitizedFirstName = DOMPurify.sanitize(formValues.firstName);
@@ -135,14 +142,14 @@ const Profile = () => {
       }
       const response = await dispatch(updateProfile(userData)).unwrap();
       if (response.status === "success") {
-        toast(<div className='flex center g5'> < VerifiedIcon /> {response.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'rgb(0, 189, 0)' }, className: 'success', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+        showToast('success', `${response.message}`);
+        setIsClickedFooter(false);
       } else {
-        toast(<div className='flex center g5'> < NewReleasesIcon /> {response.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+        showToast('error', `${response.message}`);
       }
     } catch (error) {
-      toast(<div className='flex center g5'> < NewReleasesIcon /> Error updating profile!</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+      showToast('error', 'Something went wrong!');
     } finally {
-      setIsClickedFooter(false);
       setIsSubmitted(false);
     }
   };
@@ -236,8 +243,10 @@ const Profile = () => {
 
 
                     <div className="pagebox10 flexcol center">
-                      <input type="text" name='firstName' autoComplete='name' placeholder='Enter your first name...' value={formValues.firstName} onChange={handleInputChange} required />
-                      <input type="text" name='lastName' autoComplete='name' placeholder='Enter your last name...' value={formValues.lastName} onChange={handleInputChange} required />
+                      <input type="text" name='firstName' autoComplete="given-name" placeholder='Enter your first name...' value={formValues.firstName} onChange={handleInputChange} />
+                      {firstNameError && <p className="error">{firstNameError.msg}</p>}
+                      <input type="text" name='lastName' autoComplete="family-name" placeholder='Enter your last name...' value={formValues.lastName} onChange={handleInputChange} />
+                      {lastNameError && <p className="error">{lastNameError.msg}</p>}
                       {subandclass &&
                         <select name='classOp' value={formValues.classOp} onChange={handleInputChange} required>
                           <option value="">Select your class</option>
@@ -248,6 +257,7 @@ const Profile = () => {
                           <option value={10}>10th Class</option>
                         </select>
                       }
+                      {classOpError && <p className="error">{classOpError.msg}</p>}
                     </div>
 
                     {subandclass &&
@@ -262,9 +272,11 @@ const Profile = () => {
                         </div>
                       </div>
                     }
-                    
+                    {subjectsError && <p className="error">{subjectsError.msg}</p>}
+                    {profError && <p className="error">{profError}</p>}
+
                     <div className="flex center g20 wh">
-                      <button type='submit' disabled={isSubmitted}>{isSubmitted ? 'Updating...' : 'Update'}</button>
+                      <button type='submit' disabled={isSubmitted || profLoading}>{(isSubmitted || profLoading)? 'Updating...' : 'Update'}</button>
                       <button type="button" onClick={closepopup} className="btn">Cancel</button>
                     </div>
                   </form>

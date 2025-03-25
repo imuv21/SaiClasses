@@ -1,25 +1,23 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useEffect, useState, Fragment } from "react";
 import { Helmet } from 'react-helmet-async';
-import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { signupUser, clearErrors, setSignupData } from '../../slices/authSlice';
-import { toast } from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
+import { clearErrors, setSignupData, signupUser } from '../../slices/authSlice';
+import { showToast } from '../../components/Schema';
 import DOMPurify from 'dompurify';
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
+
 
 const Signup = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { signError, siGenErrors } = useSelector((state) => state.auth);
-
+  const { signLoading, signErrors, signError, } = useSelector((state) => state.auth);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const subjects = ["Maths", "English", "Physics", "Chemistry", "Biology"];
-
 
   // profile photo upload functionality
   const defImg = 'https://t3.ftcdn.net/jpg/03/58/90/78/360_F_358907879_Vdu96gF4XVhjCZxN2kCG0THTsSQi8IhT.jpg';
@@ -40,7 +38,7 @@ const Signup = () => {
   const handleUploadClick = () => {
     document.getElementById('avatar').click();
   };
-  const [formValues, setFormValues] = useState({
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
@@ -62,15 +60,14 @@ const Signup = () => {
 
   //handlers
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     dispatch(clearErrors());
   };
   const handleSubjectClick = (subject) => {
     setSelectedSubjects((prevSelected) => {
       const newSelected = prevSelected.includes(subject) ? prevSelected.filter((sub) => sub !== subject) : [...prevSelected, subject];
 
-      setFormValues((prevValues) => ({
+      setFormData((prevValues) => ({
         ...prevValues,
         subjects: newSelected,
       }));
@@ -80,8 +77,7 @@ const Signup = () => {
     });
   };
 
-
-  const getFieldError = (field) => Array.isArray(signError) ? signError.find(error => error.path === field) : null;
+  const getFieldError = (field) => Array.isArray(signErrors) ? signErrors.find(error => error.path === field) : null;
   const firstNameError = getFieldError('firstName');
   const lastNameError = getFieldError('lastName');
   const emailError = getFieldError('email');
@@ -89,25 +85,25 @@ const Signup = () => {
   const confirmPasswordError = getFieldError('confirmPassword');
   const classOpError = getFieldError('classOp');
   const subjectsError = getFieldError('subjects');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const handleSignup = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    if (firstNameError || lastNameError || emailError || passwordError || confirmPasswordError || classOpError || subjectsError || siGenErrors) {
+    if (firstNameError || lastNameError || emailError || passwordError || confirmPasswordError || classOpError || subjectsError) {
       toast(<div className='flex center g5'> < NewReleasesIcon />Please fix the errors before submitting the form.</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
       return;
     }
     setIsSubmitting(true);
 
     try {
-      const sanitizedFirstName = DOMPurify.sanitize(formValues.firstName);
-      const sanitizedLastName = DOMPurify.sanitize(formValues.lastName);
-      const sanitizedEmail = DOMPurify.sanitize(formValues.email);
-      const sanitizedPassword = DOMPurify.sanitize(formValues.password);
-      const sanitizedConfirmPassword = DOMPurify.sanitize(formValues.confirmPassword);
-      const sanitizedClassOp = DOMPurify.sanitize(formValues.classOp);
-      const sanitizedSubjects = formValues.subjects.map(subject => DOMPurify.sanitize(subject));
+      const sanitizedFirstName = DOMPurify.sanitize(formData.firstName);
+      const sanitizedLastName = DOMPurify.sanitize(formData.lastName);
+      const sanitizedEmail = DOMPurify.sanitize(formData.email);
+      const sanitizedPassword = DOMPurify.sanitize(formData.password);
+      const sanitizedConfirmPassword = DOMPurify.sanitize(formData.confirmPassword);
+      const sanitizedClassOp = DOMPurify.sanitize(formData.classOp);
+      const sanitizedSubjects = formData.subjects.map(subject => DOMPurify.sanitize(subject));
 
       const userData = new FormData();
       userData.append('firstName', sanitizedFirstName);
@@ -132,11 +128,12 @@ const Signup = () => {
           classOp: sanitizedClassOp, subjects: sanitizedSubjects, image: selectedImage || null
         }));
 
-        toast(<div className='flex center g5'> < VerifiedIcon /> {response.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'rgb(0, 189, 0)' }, className: 'success', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+        showToast('success', `${response.message}`);
         navigate('/verify-otp');
       }
+
     } catch (error) {
-      toast(<div className='flex center g5'> < NewReleasesIcon /> Something went wrong!</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+      showToast('error', 'Something went wrong!');
     } finally {
       setIsSubmitting(false);
     }
@@ -167,17 +164,17 @@ const Signup = () => {
             <input id="avatar" type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
           </div>
 
-          <input type="text" name='firstName' autoComplete='name' placeholder='Enter your first name...' value={formValues.firstName} onChange={handleChange} />
+          <input type="text" name='firstName' autoComplete='name' placeholder='Enter your first name...' value={formData.firstName} onChange={handleChange} />
           {firstNameError && <p className="error">{firstNameError.msg}</p>}
 
-          <input type="text" name='lastName' autoComplete='name' placeholder='Enter your last name...' value={formValues.lastName} onChange={handleChange} />
+          <input type="text" name='lastName' autoComplete='name' placeholder='Enter your last name...' value={formData.lastName} onChange={handleChange} />
           {lastNameError && <p className="error">{lastNameError.msg}</p>}
 
-          <input type="email" name='email' autoComplete='email' placeholder='Enter your email...' value={formValues.email} onChange={handleChange} />
+          <input type="email" name='email' autoComplete='email' placeholder='Enter your email...' value={formData.email} onChange={handleChange} />
           {emailError && <p className="error">{emailError.msg}</p>}
 
           <div className="wh relative password">
-            <input type={passwordVisible ? "text" : "password"} className='wh' name='password' autoComplete="new-password" placeholder='Enter your password...' value={formValues.password} onChange={handleChange} />
+            <input type={passwordVisible ? "text" : "password"} className='wh' name='password' autoComplete="new-password" placeholder='Enter your password...' value={formData.password} onChange={handleChange} />
             <span onClick={togglePasswordVisibility}>
               {passwordVisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </span>
@@ -185,14 +182,14 @@ const Signup = () => {
           {passwordError && <p className="error">{passwordError.msg}</p>}
 
           <div className="wh relative password">
-            <input type={conPasswordVisible ? "text" : "password"} className='wh' name="confirmPassword" autoComplete="new-password" placeholder='Enter your password again...' value={formValues.confirmPassword} onChange={handleChange} />
+            <input type={conPasswordVisible ? "text" : "password"} className='wh' name="confirmPassword" autoComplete="new-password" placeholder='Enter your password again...' value={formData.confirmPassword} onChange={handleChange} />
             <span onClick={toggleConPasswordVisibility}>
               {conPasswordVisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </span>
           </div>
           {confirmPasswordError && <p className="error">{confirmPasswordError.msg}</p>}
 
-          <select name='classOp' value={formValues.classOp} onChange={handleChange}>
+          <select name='classOp' value={formData.classOp} onChange={handleChange}>
             <option value="">Select your class</option>
             <option value={6}>6th Class</option>
             <option value={7}>7th Class</option>
@@ -206,7 +203,7 @@ const Signup = () => {
             <p className='text wh'>Select subjects</p>
             <div className="subjectCont">
               {subjects.map((subject) => (
-                <div key={subject} className={`subject ${selectedSubjects.includes(subject) ? "turnBlue" : ""}`}  onMouseDown={() => handleSubjectClick(subject)}>
+                <div key={subject} className={`subject ${selectedSubjects.includes(subject) ? "turnBlue" : ""}`} onMouseDown={() => handleSubjectClick(subject)}>
                   {subject}
                 </div>
               ))}

@@ -2,11 +2,10 @@ import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import { verifyOtp, signupUser } from '../../slices/authSlice';
-import { toast } from 'react-hot-toast';
+import { showToast } from '../../components/Schema';
+import { clearErrors, verifyOtp, signupUser, setSignupData } from '../../slices/authSlice';
 
-import VerifiedIcon from '@mui/icons-material/Verified';
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
+
 
 const Otp = () => {
 
@@ -34,16 +33,21 @@ const Otp = () => {
 
     if (isOtpComplete) {
       try {
-        const otpResponse = await dispatch(verifyOtp({ email: signupData.email, otp: newOtpDigits.join('') })).unwrap();
+        const userData = {
+          email: signupData.email,
+          otp: Number(newOtpDigits.join(''))
+        };
+        const otpResponse = await dispatch(verifyOtp(userData)).unwrap();
 
         if (otpResponse.status === 'success') {
-          toast(<div className='flex center g5'> < VerifiedIcon /> {otpResponse.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'rgb(0, 189, 0)' }, className: 'success', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+          dispatch(setSignupData(null));
+          showToast('success', `${otpResponse.message}`);
           navigate('/login');
         } else {
-          toast(<div className='flex center g5'> < NewReleasesIcon /> {`OTP verification failed ${otpResponse.message}`}</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+          showToast('error', `${otpResponse.message}`);
         }
       } catch (error) {
-        toast(<div className='flex center g5'> < NewReleasesIcon /> {`OTP verification failed ${error.message}`}</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+        showToast('error', 'Something went wrong!');
       }
     }
   };
@@ -61,10 +65,11 @@ const Otp = () => {
   };
   useEffect(() => {
     otpInputs.current[0].focus();
-  }, []);
+    dispatch(clearErrors());
+}, [dispatch]);
 
   //time
-  const [timeLeft, setTimeLeft] = useState(130);
+  const [timeLeft, setTimeLeft] = useState(121);
   const [timerRunning, setTimerRunning] = useState(true);
   useEffect(() => {
     if (timerRunning) {
@@ -99,17 +104,21 @@ const Otp = () => {
       const response = await dispatch(signupUser(userData)).unwrap();
 
       if (response.status === "success") {
-        toast(<div className='flex center g5'> < VerifiedIcon /> {response.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'rgb(0, 189, 0)' }, className: 'success', ariaProps: { role: 'status', 'aria-live': 'polite' } });
-        setTimeLeft(130);
+        showToast('success', `${response.message}`);
+        setTimeLeft(121);
         setTimerRunning(true);
       } else {
-        toast(<div className='flex center g5'> < NewReleasesIcon /> {'Signup failed: ' + response.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+        showToast('error', `${response.message}`);
       }
 
     } catch (error) {
-      toast(<div className='flex center g5'> < NewReleasesIcon /> {error.message}</div>, { duration: 3000, position: 'top-center', style: { color: 'red' }, className: 'failed', ariaProps: { role: 'status', 'aria-live': 'polite' } });
+      showToast('error', 'Something went wrong!');
     }
   };
+
+  useEffect(() => {
+    dispatch(clearErrors());
+}, [dispatch]);
 
 
   return (
@@ -122,7 +131,7 @@ const Otp = () => {
 
       <div className='page flex center' style={{ height: '100vh' }}>
         <div className="authBox flexcol center" style={{ gap: '30px' }}>
-          <h1 className="heading">Enter the OTP sent to your email</h1>
+          <h1 className="heading">Enter the OTP you received to {signupData?.email}</h1>
 
           <div className="flex center g20">
             {otpDigits.map((digit, index) => (
