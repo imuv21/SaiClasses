@@ -6,7 +6,8 @@ import { updateProfile, clearErrors } from '../../slices/authSlice';
 import DOMPurify from 'dompurify';
 
 import ClearIcon from '@mui/icons-material/Clear';
-
+import VerifiedIcon from '@mui/icons-material/Verified';
+import NewReleasesIcon from '@mui/icons-material/NewReleases';
 
 const Profile = () => {
 

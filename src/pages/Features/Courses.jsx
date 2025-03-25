@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getVideos } from '../../slices/featSlice';
 import { Link } from 'react-router-dom';
 import Loader from '../../components/Loader/Loader';
-
+import NorthIcon from '@mui/icons-material/North';
 
 const Course = () => {
 
@@ -19,7 +19,7 @@ const Course = () => {
 
   useEffect(() => {
     dispatch(getVideos({ page, size, classOp: user.classOp, subject: sub, sortBy, order }));
-  }, [dispatch, currentPage, pageSize, user.classOp, sub]);
+  }, [dispatch, page, size, user.classOp, sub, sortBy, order]);
 
 
   //pagination
@@ -28,12 +28,12 @@ const Course = () => {
       setPage(newPage);
     }
   };
-  const getPageNumbers = (currentPage, totalPages) => {
+  const getPageNumbers = (page, totalPages) => {
     const pageNumbers = [];
     const maxPageButtons = 5;
 
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, currentPage + 2);
+    let startPage = Math.max(1, page - 2);
+    let endPage = Math.min(totalPages, page + 2);
 
     if (endPage - startPage < maxPageButtons - 1) {
       if (startPage === 1) {
@@ -71,21 +71,18 @@ const Course = () => {
       </Helmet>
 
       <div className="page flexcol start-center">
-        <h1 className="heading">Videos</h1>
 
         <div className="sortCat">
           <div className="flexcol">
-            <h1 className="heading" style={{ textTransform: 'capitalize' }}>{categoryName || `All Products`}</h1>
+            <h1 className="heading">Videos</h1>
             <p className="text">Showing {pageVideos || 0} of {totalVideos || 0} products</p>
           </div>
 
           <div className="flex center g10">
             <select name="sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="">Sort By</option>
-              <option value="boughtCounter">Popularity</option>
-              <option value="salePrice">Price</option>
-              <option value="title">Title</option>
-              <option value="averageRating">Ratings</option>
+              <option value="vidTitle">Title</option>
+              <option value="createdAt">Time</option>
             </select>
             <div className="orderfilter" onClick={toggleOrder}>
               {order === "asc" ? <NorthIcon /> : <SouthIcon />}
@@ -103,7 +100,7 @@ const Course = () => {
         </div>
 
         <div className="video-list">
-          {videoError ? (<p className='text'>Error loading videos!</p>) :
+          {videoError ? (<p className='text'>{videoError}</p>) :
             !videoLoading && !videoError && videos && videos.length > 0 ? videos.map((video, index) => (
               <div key={index} className="video-item">
                 <div className="flex minBox center-start">

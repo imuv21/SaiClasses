@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { clearErrors, setSignupData, signupUser } from '../../slices/authSlice';
 import { showToast } from '../../components/Schema';
 import DOMPurify from 'dompurify';
-
+import Loader from '../../components/Loader/Loader';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
@@ -86,7 +86,6 @@ const Signup = () => {
   const classOpError = getFieldError('classOp');
   const subjectsError = getFieldError('subjects');
 
-
   const handleSignup = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -142,6 +141,10 @@ const Signup = () => {
   useEffect(() => {
     dispatch(clearErrors());
   }, [dispatch]);
+
+  if (signLoading) {
+    return <Loader />;
+  }
 
   return (
     <Fragment>
@@ -212,8 +215,7 @@ const Signup = () => {
           {subjectsError && <p className="error">{subjectsError.msg}</p>}
 
           <button type='submit' disabled={isSubmitting}>{isSubmitting ? 'Signing up...' : 'Signup'}</button>
-          {signError?.length > 0 && <p className="error flex center">Please correct the above errors.</p>}
-          {siGenErrors && <p className="error flex center">{siGenErrors}</p>}
+          {signError && <p className="error flex center">{signError}</p>}
           <p className="text blue">Already have an account? <Link className='text blue hover' to='/login'>Click here</Link></p>
         </form>
       </div>
